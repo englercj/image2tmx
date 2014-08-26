@@ -1,0 +1,32 @@
+{
+  "name": "image2tmx",
+  "version": "0.0.0",
+  "description": "This is a quick boilerplate for a new npm module",
+  "author": "Chad Engler <chad@pantherdev.com>",
+  "license": "MIT",
+  "main": "index.js",
+  "bin": {
+    "image2tmx": "./bin/image2tmx.js"
+  },
+  "scripts": {
+    "test": "gulp test",
+    "testci": "gulp testci"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/englercj/image2tmx.git"
+  },
+  "bugs": {
+    "url": "https://github.com/englercj/image2tmx/issues"
+  },
+  "homepage": "https://github.com/englercj/image2tmx",
+  "devDependencies": {
+    "gulp": "^3.8.7",
+    "gulp-mocha": "^1.0.0",
+    "gulp-jshint": "^1.7.1",
+    "chai": "^1.9.1"
+  },
+  "dependencies": {
+    "pngjs": "^0.4.0"
+  }
+}
