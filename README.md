@@ -1,6 +1,8 @@
-# Module Boilerplate
+# image2tmx
 
-Simple setup of basic files I find myself making for every module I write.
+Converts images into .tmx maps for use with the [Tiled Editor][0].
+
+[0]: http://mapeditor.org/
 
 ## License
 
