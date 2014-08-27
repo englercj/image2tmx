@@ -87,12 +87,14 @@ function load() {
 
             tileset.on('parsed', function () {
                 if (!tilesetImage) {
+                    console.log('Writing', tileset.outWidth, 'x', tileset.outHeight, 'tileset, with', tileset.tiles.length, 'tiles.');
                     tileset.writeImage(tilesetPath);
                 }
 
                 var tilemap = new tmx.Tilemap(tileset, image);
 
                 tilemap.on('parsed', function () {
+                    console.log('Writing', tilemap.gridWidth, 'x', tilemap.gridWidth, 'tilemap.');
                     tilemap.writeXml(tilemapPath, path.basename(argv.tileset || tilesetPath), argv.format);
                 });
             });
