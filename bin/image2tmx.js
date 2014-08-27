@@ -64,12 +64,13 @@ fs.createReadStream(imagePath)
         filterType: 4
     }))
     .on('parsed', function() {
-        var tileset = new tmx.Tileset(this, tileWidth, tileHeight);
+        var image = this,
+            tileset = new tmx.Tileset(image, tileWidth, tileHeight);
 
         tileset.on('parsed', function () {
             tileset.writeImage(tilesetPath);
 
-            var tilemap = new tmx.Tilemap(tileset, tileset.png);
+            var tilemap = new tmx.Tilemap(tileset, image);
 
             tilemap.on('parsed', function () {
                 tilemap.writeXml(tilemapPath, path.basename(tilesetPath), argv.format);
