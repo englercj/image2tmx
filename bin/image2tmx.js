@@ -54,7 +54,10 @@ var fs = require('fs'),
     PNG = require('pngjs').PNG,
     outDir = argv.outputDir || path.dirname(imagePath),
     fext = path.extname(imagePath),
-    fbase = path.basename(imagePath, fext);
+    fbase = path.basename(imagePath, fext),
+
+    tilesetPath = path.join(outDir, fbase + '-tileset.png'),
+    tilemapPath = path.join(outDir, fbase + '.tmx');
 
 fs.createReadStream(imagePath)
     .pipe(new PNG({
@@ -64,12 +67,12 @@ fs.createReadStream(imagePath)
         var tileset = new tmx.Tileset(this, tileWidth, tileHeight);
 
         tileset.on('parsed', function () {
-            tileset.writeImage(path.join(outDir, fbase + '-tileset.png'));
+            tileset.writeImage(tilesetPath);
 
-            var tilemap = new tmx.Tilemap(tileset, this);
+            var tilemap = new tmx.Tilemap(tileset, tileset.png);
 
             tilemap.on('parsed', function () {
-                tilemap.writeXml(path.join(outDir, fbase + '.tmx'), tilemap.toXmlString(argv.format));
+                tilemap.writeXml(tilemapPath, path.basename(tilesetPath), argv.format);
             });
         });
     });
