@@ -10,18 +10,22 @@ var yargs = require('yargs')
             })
             .options('f', {
                 alias: 'format',
-                describe: 'Defines the data format for the tilemap output. Can be csv, gzip, or zlib',
+                describe: 'Defines the data format for the tilemap output. Can be base64, gzip, or zlib',
                 default: 'gzip'
             })
             .options('o', {
                 alias: 'outputDir',
                 describe: 'The output directory to put the tilemap and tileset'
             })
+            .options('s', {
+                alias: 'tileset',
+                describe: 'A tileset image to use instead of creating a new one'
+            })
             .demand(2),
     argv = yargs.argv,
     tileWidth = 0,
     tileHeight = 0,
-    imagePath = '';
+    imagePath = null;
 
 function usage() {
     console.log(yargs.help());
@@ -57,23 +61,40 @@ var fs = require('fs'),
     fbase = path.basename(imagePath, fext),
 
     tilesetPath = path.join(outDir, fbase + '-tileset.png'),
-    tilemapPath = path.join(outDir, fbase + '.tmx');
+    tilemapPath = path.join(outDir, fbase + '.tmx'),
 
-fs.createReadStream(imagePath)
-    .pipe(new PNG({
-        filterType: 4
-    }))
-    .on('parsed', function() {
-        var image = this,
-            tileset = new tmx.Tileset(image, tileWidth, tileHeight);
+    image = null,
+    tilesetImage = null;
 
-        tileset.on('parsed', function () {
-            tileset.writeImage(tilesetPath);
+if (argv.tileset) {
+    fs.createReadStream(argv.tileset)
+        .pipe(new PNG())
+        .on('parsed', function () {
+            tilesetImage = this;
+            load();
+        });
+} else {
+    load();
+}
 
-            var tilemap = new tmx.Tilemap(tileset, image);
+function load() {
+    fs.createReadStream(imagePath)
+        .pipe(new PNG())
+        .on('parsed', function() {
+            image = this;
 
-            tilemap.on('parsed', function () {
-                tilemap.writeXml(tilemapPath, path.basename(tilesetPath), argv.format);
+            var tileset = new tmx.Tileset(tilesetImage || image, tileWidth, tileHeight, !!tilesetImage);
+
+            tileset.on('parsed', function () {
+                if (!tilesetImage) {
+                    tileset.writeImage(tilesetPath);
+                }
+
+                var tilemap = new tmx.Tilemap(tileset, image);
+
+                tilemap.on('parsed', function () {
+                    tilemap.writeXml(tilemapPath, path.basename(argv.tileset || tilesetPath), argv.format);
+                });
             });
         });
-    });
+}
