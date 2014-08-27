@@ -50,23 +50,26 @@ console.log('Map Image:', imagePath);
 // If we get here, we have valid params that have been read. Lets start parsing!
 var fs = require('fs'),
     path = require('path'),
-    tmx = require('../lib/'),
-    imageData = fs.readFileSync(imagePath),
+    tmx = require('../lib'),
     PNG = require('pngjs').PNG,
     outDir = argv.outputDir || path.dirname(imagePath),
     fext = path.extname(imagePath),
     fbase = path.basename(imagePath, fext);
 
-var image = (new PNG()).parse(imageData),
-    tileset = new tmx.Tilset(image, tileWidth, tileHeight);
-    // tilemap = new tmx.Tilemap(tileset, image);
+fs.createReadStream(imagePath)
+    .pipe(new PNG({
+        filterType: 4
+    }))
+    .on('parsed', function() {
+        var tileset = new tmx.Tileset(this, tileWidth, tileHeight);
 
-tileset.on('parsed', function () {
-    tileset.writeImage(path.join(outDir, fbase + '-tileset.png'));
-});
+        tileset.on('parsed', function () {
+            tileset.writeImage(path.join(outDir, fbase + '-tileset.png'));
 
-// tilemap.on('parsed', function () {
-//     tilemap.writeXml(path.join(outDir, fbase + '.tmx'), tilemap.toXmlString(argv.format));
-// });
+            var tilemap = new tmx.Tilemap(tileset, this);
 
-console.log('Done!');
+            tilemap.on('parsed', function () {
+                tilemap.writeXml(path.join(outDir, fbase + '.tmx'), tilemap.toXmlString(argv.format));
+            });
+        });
+    });
