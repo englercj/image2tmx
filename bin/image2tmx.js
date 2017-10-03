@@ -3,10 +3,10 @@
 var glob = require('glob'),
     async = require('async'),
     yargs = require('yargs')
-            .usage('Converts an image to a .tmx tilemap\nUsage: $0 [options] <tile width/size> [tileheight] <map image(s)>')
-            .example('$0 16 ./image.png')
-            .example('$0 -g 16 32 ./image.png')
-            .example('$0 16 "./{cave,dungeon}*.png"')
+            .usage('Converts an image to a .tmx tilemap\nUsage: image2tmx [options] <tile width/size> [tileheight] <map image(s)>')
+            .example('image2tmx 16 ./image.png')
+            .example('image2tmx 16 32 ./image.png')
+            .example('image2tmx 16 "./{cave,dungeon}*.png"')
             .options('h', {
                 alias: 'help',
                 describe: 'Prints this help/usage information.'
